@@ -155,7 +155,7 @@ type PropertyNested<TObj, TValueAtEnd = true, TTypes = Date | number | boolean |
             : never
           : never 
         : TProp extends string
-          //Eigenschaften werden mit Hilfe von Join verkettet
+          //Objekte werden mit Hilfe von Join verkettet
           ? TValueAtEnd extends true
             ? Join<TProp, PropertyNested<TObjRequired[TProp], TValueAtEnd, TTypes, JoinIndex[D]>>
             : `${TProp}` | Join<TProp, PropertyNested<TObjRequired[TProp], TValueAtEnd, TTypes, JoinIndex[D]>>
@@ -166,14 +166,17 @@ type PropertyNested<TObj, TValueAtEnd = true, TTypes = Date | number | boolean |
 type ArrayNested<TObj, D extends number = 3, TObjRequired = Required<TObj>> = 
   D extends never
     ? never
+    //Date, number, boolean, string, Arrays und Funktionen brechen die weitere Verarbeitung ab
     : keyof {
       [TProp in keyof TObjRequired as TObjRequired[TProp] extends Date | number | boolean | string | any[] | Function
         ? TProp extends string
+          //Array werden retourniert, alles andere wird ignoriert
           ? TObjRequired[TProp] extends any[]
             ? `${TProp}`
             : never
           : never
         : TProp extends string
+          //Objekte werden mit Hilfe von Join verkettet
           ? Join<TProp, ArrayNested<TObjRequired[TProp], JoinIndex[D]>>
           : never
       ]
